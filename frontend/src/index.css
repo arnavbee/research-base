@@ -35,15 +35,9 @@
         --warning: 38 92% 50%;
         --info: 217 91% 60%;
     }
-}
 
-@layer base {
     * {
         @apply border-border;
-    }
-    
-    html {
-        @apply dark;
     }
     
     body {
@@ -80,11 +74,18 @@
     
     .tracing-beam::after {
         content: '';
-        @apply absolute inset-0 -z-10 rounded-xl bg-gradient-to-b from-indigo-500/20 to-transparent blur-xl;
+        @apply absolute inset-0 -z-10 rounded-xl;
+        background: linear-gradient(to bottom, rgba(99, 102, 241, 0.2), transparent);
+        filter: blur(24px);
     }
     
     .btn-primary {
-        @apply bg-indigo-600 hover:bg-indigo-500 text-white shadow-[0_0_15px_-3px_rgba(99,102,241,0.4)] transition-all duration-300 active:scale-95;
+        @apply bg-indigo-600 hover:bg-indigo-500 text-white transition-all duration-300;
+        box-shadow: 0 0 15px -3px rgba(99, 102, 241, 0.4);
+    }
+    
+    .btn-primary:active {
+        transform: scale(0.95);
     }
     
     .btn-secondary {
@@ -96,19 +97,29 @@
     }
     
     .badge-category {
-        @apply bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-mono text-xs uppercase tracking-wider px-2 py-0.5 rounded;
+        @apply bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs uppercase tracking-wider px-2 py-0.5 rounded;
+        font-family: 'JetBrains Mono', monospace;
     }
     
     .badge-score {
-        @apply bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono font-bold px-2 py-0.5 rounded;
+        @apply bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold px-2 py-0.5 rounded;
+        font-family: 'JetBrains Mono', monospace;
     }
     
     .input-search {
-        @apply bg-zinc-950/50 border-zinc-800 focus:border-indigo-500 focus:ring-indigo-500/20 h-12 text-lg transition-all duration-300;
+        @apply bg-zinc-950/50 border-zinc-800 h-12 text-lg transition-all duration-300;
+    }
+    
+    .input-search:focus {
+        @apply border-indigo-500;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
     }
     
     .text-gradient {
-        @apply bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent;
+        background: linear-gradient(to right, #818CF8, #A78BFA, #818CF8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
     
     .animate-fade-in {
@@ -165,5 +176,37 @@
 
 /* Custom focus styles */
 *:focus-visible {
-    @apply outline-none ring-2 ring-indigo-500 ring-offset-2 ring-offset-zinc-950;
+    outline: none;
+    box-shadow: 0 0 0 2px #09090B, 0 0 0 4px #6366F1;
+}
+
+/* Debug wrapper styles */
+[data-debug-wrapper="true"] {
+    display: contents !important;
+}
+
+[data-debug-wrapper="true"] > * {
+    margin-left: inherit;
+    margin-right: inherit;
+    margin-top: inherit;
+    margin-bottom: inherit;
+    padding-left: inherit;
+    padding-right: inherit;
+    padding-top: inherit;
+    padding-bottom: inherit;
+    column-gap: inherit;
+    row-gap: inherit;
+    gap: inherit;
+    border-left-width: inherit;
+    border-right-width: inherit;
+    border-top-width: inherit;
+    border-bottom-width: inherit;
+    border-left-style: inherit;
+    border-right-style: inherit;
+    border-top-style: inherit;
+    border-bottom-style: inherit;
+    border-left-color: inherit;
+    border-right-color: inherit;
+    border-top-color: inherit;
+    border-bottom-color: inherit;
 }
