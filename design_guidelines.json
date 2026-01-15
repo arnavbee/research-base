@@ -1,0 +1,134 @@
+{
+  "design_system": {
+    "name": "Obsidian Intelligence",
+    "description": "A dark, precision-focused design system for AI research monitoring. Combines the density of a trading terminal with the elegance of a modern academic journal.",
+    "theme_strategy": "dark_only",
+    "typography": {
+      "font_family": {
+        "heading": "Outfit, sans-serif",
+        "body": "Inter, sans-serif",
+        "mono": "JetBrains Mono, monospace"
+      },
+      "imports": [
+        "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap"
+      ],
+      "scale": {
+        "h1": "text-4xl md:text-5xl font-bold tracking-tight",
+        "h2": "text-3xl font-semibold tracking-tight",
+        "h3": "text-xl font-medium tracking-normal",
+        "body": "text-base leading-relaxed text-zinc-400",
+        "small": "text-sm text-zinc-500",
+        "mono": "font-mono text-xs tracking-wide text-zinc-400"
+      }
+    },
+    "colors": {
+      "palette": {
+        "background": "#09090B",
+        "foreground": "#FAFAFA",
+        "card": "#18181B",
+        "card_foreground": "#FAFAFA",
+        "popover": "#09090B",
+        "popover_foreground": "#FAFAFA",
+        "primary": "#6366F1",
+        "primary_foreground": "#FAFAFA",
+        "secondary": "#27272A",
+        "secondary_foreground": "#FAFAFA",
+        "muted": "#27272A",
+        "muted_foreground": "#A1A1AA",
+        "accent": "#27272A",
+        "accent_foreground": "#FAFAFA",
+        "destructive": "#7F1D1D",
+        "destructive_foreground": "#FAFAFA",
+        "border": "#27272A",
+        "input": "#27272A",
+        "ring": "#6366F1"
+      },
+      "semantic": {
+        "success": "#10B981",
+        "warning": "#F59E0B",
+        "info": "#3B82F6",
+        "ai_glow": "rgba(99, 102, 241, 0.15)"
+      }
+    },
+    "visual_enhancers": {
+      "glassmorphism": "bg-zinc-950/70 backdrop-blur-xl border border-white/10 shadow-2xl",
+      "tracing_beam": "relative after:absolute after:inset-0 after:z-[-1] after:rounded-xl after:bg-gradient-to-b after:from-indigo-500/20 after:to-transparent after:blur-xl",
+      "grid_pattern": "bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]",
+      "border_radius": {
+        "container": "rounded-xl",
+        "element": "rounded-md"
+      }
+    },
+    "layout": {
+      "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+      "section_spacing": "py-12 md:py-24",
+      "grid_system": "grid grid-cols-1 md:grid-cols-12 gap-6",
+      "bento_grid": {
+        "hero": "col-span-full lg:col-span-8 row-span-2",
+        "stat_card": "col-span-full sm:col-span-6 lg:col-span-4",
+        "list_view": "col-span-full lg:col-span-4 row-span-2"
+      }
+    },
+    "components": {
+      "buttons": {
+        "primary": "bg-indigo-600 hover:bg-indigo-500 text-white shadow-[0_0_15px_-3px_rgba(99,102,241,0.4)] transition-all duration-300",
+        "secondary": "bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700",
+        "ghost": "hover:bg-zinc-800/50 text-zinc-400 hover:text-white"
+      },
+      "cards": {
+        "base": "bg-zinc-900/50 border border-zinc-800/50 backdrop-blur-sm hover:border-indigo-500/30 transition-colors duration-300",
+        "interactive": "group relative overflow-hidden hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-500"
+      },
+      "inputs": {
+        "search": "bg-zinc-950/50 border-zinc-800 focus:border-indigo-500 focus:ring-indigo-500/20 h-12 text-lg"
+      },
+      "badges": {
+        "category": "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-mono text-xs uppercase tracking-wider",
+        "score": "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono font-bold"
+      }
+    },
+    "motion": {
+      "hover": "transition-all duration-300 ease-out",
+      "entrance": "animate-in fade-in slide-in-from-bottom-4 duration-700",
+      "micro_interaction": "active:scale-95 transition-transform duration-100"
+    },
+    "assets": {
+      "images": [
+        {
+          "category": "hero_background",
+          "url": "https://images.unsplash.com/photo-1647356191320-d7a1f80ca777?crop=entropy&cs=srgb&fm=jpg&q=85",
+          "description": "Abstract purple/blue neural network pattern for hero section background overlay"
+        },
+        {
+          "category": "data_visualization",
+          "url": "https://images.unsplash.com/photo-1647356162503-6d9bea367486?crop=entropy&cs=srgb&fm=jpg&q=85",
+          "description": "Particle network for 'Processing' or 'Ingestion' states"
+        }
+      ],
+      "icons": "lucide-react"
+    },
+    "accessibility": {
+      "contrast_check": "Ensure all text on zinc-900 backgrounds is at least zinc-400 or lighter.",
+      "focus_states": "focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-950"
+    },
+    "instructions_to_main_agent": [
+      "1. SETUP: Install 'lucide-react', 'clsx', 'tailwind-merge' immediately.",
+      "2. THEME: Force dark mode in tailwind.config.js. Do not implement a light mode toggle.",
+      "3. LAYOUT: Use the 'Bento Grid' strategy for the dashboard. Do not create a generic 3-column layout.",
+      "4. TYPOGRAPHY: Import the fonts in index.css. Use 'Outfit' for all headings and 'JetBrains Mono' for any numbers, dates, or IDs.",
+      "5. GLASSMORPHISM: Apply the 'glassmorphism' class defined in visual_enhancers to the main 'Ask AI' search container.",
+      "6. DATA-TESTID: Add data-testid attributes to the Search Input, Ask Button, and Paper Cards.",
+      "7. CHARTING: If charts are needed, use Recharts with custom tooltips styled like the cards.",
+      "8. BACKGROUND: Use the 'grid_pattern' on the body background to give it texture.",
+      "9. SOURCES: When displaying sources, use a dense, list-based layout (not big cards) to maximize information density."
+    ],
+    "universal_guidelines": [
+      "Don't make generic centered layouts.",
+      "Create depth through layered design elements with z-index hierarchy.",
+      "Use glass-morphism effects with backdrop filters.",
+      "Every interaction needs micro-animations.",
+      "Use 2-3x more spacing than feels comfortable.",
+      "Subtle grain textures and noise overlays separate good from extraordinary."
+    ]
+  }
+}
