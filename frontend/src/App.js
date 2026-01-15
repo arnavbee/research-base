@@ -9,21 +9,29 @@ import {
   RefreshCw, 
   ExternalLink, 
   ChevronRight,
+  ChevronLeft,
   Sparkles,
   BookOpen,
   TrendingUp,
   Loader2,
   AlertCircle,
-  CheckCircle2
+  CheckCircle2,
+  List,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -141,6 +149,61 @@ const PaperCard = ({ paper, index }) => {
   );
 };
 
+// All Papers List Item (for modal)
+const PaperListItem = ({ paper, index }) => {
+  const formatDate = (dateStr) => {
+    try {
+      return new Date(dateStr).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    } catch {
+      return 'Unknown';
+    }
+  };
+
+  return (
+    <div 
+      data-testid={`paper-list-item-${index}`}
+      className="group p-4 border-b border-zinc-800/50 hover:bg-zinc-900/50 transition-all duration-200"
+    >
+      <div className="flex items-start gap-4">
+        <div className="flex-shrink-0 w-8 h-8 rounded-md bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-mono text-xs">
+          {index + 1}
+        </div>
+        <div className="flex-1 min-w-0">
+          <h4 className="text-sm font-medium text-zinc-200 group-hover:text-indigo-400 transition-colors">
+            {paper.title}
+          </h4>
+          <p className="text-xs text-zinc-500 mt-1">
+            {paper.authors?.slice(0, 5).join(", ")}{paper.authors?.length > 5 ? " et al." : ""}
+          </p>
+          <div className="flex items-center gap-3 mt-2 flex-wrap">
+            <span className="font-mono text-[11px] text-zinc-500">{paper.arxiv_id}</span>
+            <span className="text-zinc-700">•</span>
+            <span className="text-[11px] text-zinc-500">{formatDate(paper.published_date)}</span>
+            {paper.categories?.map((cat, i) => (
+              <span key={i} className="badge-category text-[10px]">{cat}</span>
+            ))}
+          </div>
+          {paper.abstract && (
+            <p className="text-xs text-zinc-500 mt-2 line-clamp-2">{paper.abstract}</p>
+          )}
+        </div>
+        <a 
+          href={paper.arxiv_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-2 rounded-md hover:bg-zinc-800 text-zinc-500 hover:text-indigo-400 transition-all flex-shrink-0"
+        >
+          <ExternalLink className="w-4 h-4" />
+        </a>
+      </div>
+    </div>
+  );
+};
+
 // Example Questions
 const exampleQuestions = [
   "What are the latest advances in transformer efficiency?",
@@ -162,7 +225,12 @@ function App() {
   });
   const [recentPapers, setRecentPapers] = useState([]);
   const [isSyncing, setIsSyncing] = useState(false);
-  const [activeTab, setActiveTab] = useState("search");
+  
+  // All Papers Modal State
+  const [showAllPapers, setShowAllPapers] = useState(false);
+  const [allPapersData, setAllPapersData] = useState({ papers: [], total: 0, page: 1, total_pages: 0 });
+  const [isLoadingAllPapers, setIsLoadingAllPapers] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Fetch stats
   const fetchStats = useCallback(async () => {
@@ -184,6 +252,21 @@ function App() {
     }
   }, []);
 
+  // Fetch all papers with pagination
+  const fetchAllPapers = useCallback(async (page = 1) => {
+    setIsLoadingAllPapers(true);
+    try {
+      const response = await axios.get(`${API}/papers/all?page=${page}&limit=50`);
+      setAllPapersData(response.data);
+      setCurrentPage(page);
+    } catch (error) {
+      console.error("Failed to fetch all papers:", error);
+      toast.error("Failed to load papers");
+    } finally {
+      setIsLoadingAllPapers(false);
+    }
+  }, []);
+
   // Initial data fetch
   useEffect(() => {
     fetchStats();
@@ -193,6 +276,13 @@ function App() {
     const interval = setInterval(fetchStats, 30000);
     return () => clearInterval(interval);
   }, [fetchStats, fetchRecentPapers]);
+
+  // Load all papers when modal opens
+  useEffect(() => {
+    if (showAllPapers) {
+      fetchAllPapers(1);
+    }
+  }, [showAllPapers, fetchAllPapers]);
 
   // Search handler
   const handleSearch = async (searchQuery = query) => {
@@ -207,7 +297,6 @@ function App() {
     try {
       const response = await axios.post(`${API}/search`, { query: searchQuery });
       setSearchResult(response.data);
-      setActiveTab("search");
     } catch (error) {
       console.error("Search failed:", error);
       toast.error("Search failed. Please try again.");
@@ -273,6 +362,78 @@ function App() {
   return (
     <div className="min-h-screen" data-testid="arxiv-qa-app">
       <Toaster position="top-right" richColors />
+      
+      {/* All Papers Modal */}
+      <Dialog open={showAllPapers} onOpenChange={setShowAllPapers}>
+        <DialogContent className="max-w-4xl h-[85vh] p-0 bg-zinc-950 border-zinc-800">
+          <DialogHeader className="p-6 pb-4 border-b border-zinc-800">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-indigo-500/10">
+                  <List className="w-5 h-5 text-indigo-400" />
+                </div>
+                <div>
+                  <DialogTitle className="text-xl font-bold text-zinc-100">All Ingested Papers</DialogTitle>
+                  <p className="text-sm text-zinc-500 mt-1">
+                    {allPapersData.total} papers in knowledge base
+                  </p>
+                </div>
+              </div>
+            </div>
+          </DialogHeader>
+          
+          <div className="flex-1 overflow-hidden">
+            {isLoadingAllPapers ? (
+              <div className="flex items-center justify-center h-64">
+                <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
+              </div>
+            ) : (
+              <ScrollArea className="h-[calc(85vh-180px)]">
+                <div className="divide-y divide-zinc-800/50">
+                  {allPapersData.papers.map((paper, index) => (
+                    <PaperListItem 
+                      key={paper.arxiv_id || index} 
+                      paper={paper} 
+                      index={(currentPage - 1) * 50 + index}
+                    />
+                  ))}
+                </div>
+              </ScrollArea>
+            )}
+          </div>
+          
+          {/* Pagination */}
+          {allPapersData.total_pages > 1 && (
+            <div className="p-4 border-t border-zinc-800 flex items-center justify-between">
+              <p className="text-sm text-zinc-500">
+                Page {currentPage} of {allPapersData.total_pages}
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fetchAllPapers(currentPage - 1)}
+                  disabled={currentPage <= 1 || isLoadingAllPapers}
+                  className="gap-1"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fetchAllPapers(currentPage + 1)}
+                  disabled={currentPage >= allPapersData.total_pages || isLoadingAllPapers}
+                  className="gap-1"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
       
       {/* Header */}
       <header className="border-b border-zinc-800/50 bg-zinc-950/50 backdrop-blur-sm sticky top-0 z-50">
@@ -348,7 +509,7 @@ function App() {
           <StatCard
             icon={FileText}
             title="Categories"
-            value={stats.categories?.length || 5}
+            value={stats.categories?.length || 1}
             subtitle="AI research areas"
             color="blue"
           />
@@ -500,9 +661,16 @@ function App() {
                     <Clock className="w-5 h-5 text-amber-400" />
                     <CardTitle className="text-lg">Recent Papers</CardTitle>
                   </div>
-                  <Badge variant="outline" className="text-xs font-mono">
-                    {recentPapers.length}
-                  </Badge>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowAllPapers(true)}
+                    className="text-xs text-indigo-400 hover:text-indigo-300 gap-1"
+                    data-testid="view-all-papers-btn"
+                  >
+                    <List className="w-3 h-3" />
+                    View All
+                  </Button>
                 </div>
               </CardHeader>
               <CardContent className="p-0">
