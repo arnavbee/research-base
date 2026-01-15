@@ -331,6 +331,29 @@ async def get_recent_papers(limit: int = 20):
     
     return papers
 
+@api_router.get("/papers/all")
+async def get_all_papers(page: int = 1, limit: int = 50, category: str = None):
+    """Get all papers with pagination"""
+    skip = (page - 1) * limit
+    
+    query = {}
+    if category:
+        query["categories"] = category
+    
+    total = await db.papers.count_documents(query)
+    papers = await db.papers.find(
+        query,
+        {"_id": 0}
+    ).sort("published_date", -1).skip(skip).limit(limit).to_list(limit)
+    
+    return {
+        "papers": papers,
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "total_pages": (total + limit - 1) // limit
+    }
+
 @api_router.get("/papers/{arxiv_id}")
 async def get_paper(arxiv_id: str):
     """Get paper by arXiv ID"""
